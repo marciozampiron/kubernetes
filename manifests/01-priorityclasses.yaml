@@ -1,11 +1,4 @@
 
----
-
-## 3. Manifests YAML (para `manifests/`)
-
-### 3.1 `manifests/01-priorityclasses.yaml`
-
-```yaml
 apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
 metadata:
@@ -45,4 +38,3 @@ preemptionPolicy: Never
 globalDefault: false
 description: "Workloads de observabilidade importantes, que têm prioridade alta mas NÃO preemptam outros pods."
 
-```yaml
