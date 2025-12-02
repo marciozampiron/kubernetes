@@ -1,0 +1,101 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: priority-lab
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-high
+  namespace: priority-lab
+  labels:
+    app: frontend-high
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend-high
+  template:
+    metadata:
+      labels:
+        app: frontend-high
+    spec:
+      # Alta prioridade: usa PriorityClass high-priority-apps
+      priorityClassName: high-priority-apps
+      containers:
+        - name: nginx
+          image: nginx:1.27
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-medium
+  namespace: priority-lab
+  labels:
+    app: backend-medium
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend-medium
+  template:
+    metadata:
+      labels:
+        app: backend-medium
+    spec:
+      # Prioridade média
+      priorityClassName: medium-priority-apps
+      containers:
+        - name: nginx
+          image: nginx:1.27
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: batch-low
+  namespace: priority-lab
+  labels:
+    app: batch-low
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: batch-low
+  template:
+    metadata:
+      labels:
+        app: batch-low
+    spec:
+      # Baixa prioridade, pode ser preemptado
+      priorityClassName: low-priority-jobs
+      containers:
+        - name: busybox
+          image: busybox:1.37
+          command: ["sh", "-c", "while true; do echo low-priority-job; sleep 30; done"]
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
