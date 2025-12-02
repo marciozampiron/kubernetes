@@ -1,0 +1,46 @@
+
+---
+
+## 3. Manifests YAML (para `manifests/`)
+
+### 3.1 `manifests/01-priorityclasses.yaml`
+
+```yaml
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: high-priority-apps
+value: 100000
+preemptionPolicy: PreemptLowerPriority
+globalDefault: false
+description: "Aplicações críticas de produção que podem preemptar workloads de menor prioridade."
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: medium-priority-apps
+value: 50000
+preemptionPolicy: PreemptLowerPriority
+globalDefault: false
+description: "Aplicações de negócio normais, que não devem preemptar workloads realmente críticos."
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: low-priority-jobs
+value: 1000
+preemptionPolicy: PreemptLowerPriority
+globalDefault: false
+description: "Jobs batch e workloads de baixa prioridade que podem ser desalojados se faltar recurso."
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: observability-high
+value: 75000
+preemptionPolicy: Never
+globalDefault: false
+description: "Workloads de observabilidade importantes, que têm prioridade alta mas NÃO preemptam outros pods."
