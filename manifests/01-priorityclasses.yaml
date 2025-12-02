@@ -45,4 +45,4 @@ preemptionPolicy: Never
 globalDefault: false
 description: "Workloads de observabilidade importantes, que têm prioridade alta mas NÃO preemptam outros pods."
 
-```
+```yaml
