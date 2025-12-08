@@ -1,0 +1,55 @@
+
+---
+## 2. `manifests/01-app-deploy-service.yaml`
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ingress-gateway-lab
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-web
+  namespace: ingress-gateway-lab
+  labels:
+    app: demo-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: demo-web
+  template:
+    metadata:
+      labels:
+        app: demo-web
+    spec:
+      containers:
+        - name: demo-web
+          # Imagem simples com resposta HTTP em texto
+          image: nginxdemos/hello:plain-text
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-web
+  namespace: ingress-gateway-lab
+  labels:
+    app: demo-web
+spec:
+  type: ClusterIP
+  selector:
+    app: demo-web
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80

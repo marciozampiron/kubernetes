@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-web-ingress
+  namespace: ingress-gateway-lab
+  annotations:
+    # Aqui você poderia colocar anotações específicas do seu Ingress Controller,
+    # por exemplo, de NGINX, Traefik, cert-manager, etc.
+    # Exemplo (comente/descomente conforme necessário):
+    # nginx.ingress.kubernetes.io/rewrite-target: /
+    # cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+    - host: demo.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: demo-web
+                port:
+                  number: 80
+  # Exemplo (opcional) de TLS: você precisa de um Secret TLS no namespace
+  # tls:
+  #   - hosts:
+  #       - demo.example.com
+  #     secretName: demo-web-tls

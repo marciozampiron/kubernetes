@@ -1,0 +1,48 @@
+# GatewayClass define o "tipo" de Gateway (igual ao papel do Ingress Controller).
+# Aqui usamos um controlador de exemplo. Em um cluster real, troque o campo
+# spec.controllerName pelo identificador do controlador que você estiver usando.
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: example-gateway-class
+spec:
+  controllerName: example.net/gateway-controller
+---
+# Gateway é o ponto de entrada de tráfego (listeners).
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: demo-gateway
+  namespace: ingress-gateway-lab
+spec:
+  gatewayClassName: example-gateway-class
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      hostname: demo.example.com
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+# HTTPRoute define as regras de roteamento HTTP para o Gateway.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: demo-web-httproute
+  namespace: ingress-gateway-lab
+spec:
+  parentRefs:
+    - kind: Gateway
+      name: demo-gateway
+      namespace: ingress-gateway-lab
+  hostnames:
+    - demo.example.com
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: demo-web # svc a ser roteado
+          port: 80 # porta do svc
